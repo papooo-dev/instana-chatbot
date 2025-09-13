@@ -144,10 +144,10 @@ pip install -r requirements.txt
 #### 1. Milvus 서버 시작
 ```bash
 # Docker Compose로 Milvus 서버 시작
-docker-compose -f milvus-standalone-docker-compose.yml up -d
+docker-compose -f config/milvus-standalone-docker-compose.yml up -d
 
 # 서버 상태 확인
-docker-compose -f milvus-standalone-docker-compose.yml ps
+docker-compose -f config/milvus-standalone-docker-compose.yml ps
 ```
 
 #### 2. PDF 문서 다운로드 및 저장
@@ -166,7 +166,7 @@ curl -o data/instana-observability-1.0.303-documentation.pdf \
 #### 3. PDF 문서 저장 스크립트 실행
 ```bash
 # 메인 스크립트 실행
-uv run ingest_pdf_to_milvus.py
+uv run utils/ingest_pdf_to_milvus.py
 ```
 
 ### 🔧 주요 기능

@@ -7,19 +7,22 @@ import time
 from pathlib import Path
 from typing import List, Dict, Any
 
-from .pdf_processor import PDFProcessor
+# Add the project root to the Python path
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from pdf_processor import PDFProcessor
 from core.embedding import WatsonxEmbeddingManager, validate_watsonx_config
 from core.milvus_manager import MilvusVectorStoreManager, validate_milvus_config
 
 
 def main():
-    """메인 실행 함수"""
     print("=" * 60)
     print("Instana PDF 문서를 Milvus 벡터 DB에 저장하는 스크립트")
     print("=" * 60)
     
     # PDF 파일 경로 설정
-    pdf_path = "../data/instana-observability-1.0.301-documentation.pdf"
+    pdf_path = "data/instana-observability-1.0.301-documentation.pdf"
     
     if not os.path.exists(pdf_path):
         print(f"❌ PDF 파일을 찾을 수 없습니다: {pdf_path}")
@@ -160,7 +163,7 @@ def check_prerequisites():
     print("🔍 사전 요구사항 확인 중...")
     
     # PDF 파일 확인
-    pdf_path = "../data/instana-observability-1.0.301-documentation.pdf"
+    pdf_path = "data/instana-observability-1.0.301-documentation.pdf"
     if not os.path.exists(pdf_path):
         print(f"❌ PDF 파일이 없습니다: {pdf_path}")
         return False
