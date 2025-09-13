@@ -14,3 +14,6 @@ core/__pycache__/prompts.cpython-311.pyc
 
 # Volume data directories (database and storage files)
 volumes/
+
+# Large documentation files
+*.pdf
