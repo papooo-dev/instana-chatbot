@@ -14,8 +14,14 @@ dependencies = [
     "qrcode[pil]>=7.4.2",
     "pillow>=10.3.0",
     "pymilvus>=2.4.0", # for future RAG
-    "langchain-openai>=0.3.33",
+    "langchain-milvus>=0.1.0", # for Milvus vector store integration
+    "langchain-community>=0.3.0", # for PDF processing
+    "pypdf>=4.0.0", # for PDF text extraction
 ]
+
+[project.scripts]
+app = "app.app:main"
+ingest-pdf = "utils.ingest_pdf_to_milvus:main"
 
 [tool.uv]
 dev-dependencies = [

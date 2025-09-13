@@ -1,4 +1,16 @@
 .env
 __pycache__/llm.cpython-311.pyc
 __pycache__/prompts.cpython-311.pyc
+__pycache__/pdf_to_milvus.cpython-311.pyc
+
 uv.lock
+app.py
+.DS_Store
+__pycache__/embedding.cpython-311.pyc
+__pycache__/milvus_manager.cpython-311.pyc
+__pycache__/pdf_processor.cpython-311.pyc
+__pycache__/rag.cpython-311.pyc
+core/__pycache__/prompts.cpython-311.pyc
+
+# Volume data directories (database and storage files)
+volumes/
