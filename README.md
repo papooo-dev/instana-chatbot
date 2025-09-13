@@ -60,8 +60,8 @@ uv sync
 2. **PDF 문서 다운로드** (RAG 기능용):
 ```bash
 # Instana 공식 문서 다운로드
-curl -o data/instana-observability-1.0.303-documentation.pdf \
-  "https://www.ibm.com/docs/en/SSE1JP5_1.0.303/pdf/instana-observability-1.0.303-documentation.pdf"
+curl -o data/instana-observability-1.0.301-documentation.pdf \
+  "https://www.ibm.com/docs/en/SSE1JP5_1.0.301/pdf/instana-observability-1.0.301-documentation.pdf"
 ```
 
 3. **Milvus 서버 시작** (RAG 기능용):
