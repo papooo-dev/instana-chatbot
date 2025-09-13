@@ -5,7 +5,7 @@
 ## 🌟 주요 기능
 
 - **대화형 채팅 UI**: 스트리밍 응답을 지원하는 Streamlit 기반 채팅 인터페이스
-- **RAG 기능**: Milvus 벡터 데이터베이스를 활용한 문서 검색 및 컨텍스트 인식 응답. ([활용 문서](data/instana-observability-1.0.301-documentation.pdf))
+- **RAG 기능**: Milvus 벡터 데이터베이스를 활용한 문서 검색 및 컨텍스트 인식 응답. ([활용 문서](https://www.ibm.com/docs/en/SSE1JP5_1.0.301/pdf/instana-observability-1.0.301-documentation.pdf))
 - **uv 패키지 관리**: Python 의존성 관리
 
 ## 🚀 Quick Start
