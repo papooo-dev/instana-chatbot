@@ -57,7 +57,14 @@ MILVUS_COLLECTION=instana_docs
 uv sync
 ```
 
-2. **Milvus 서버 시작** (RAG 기능용):
+2. **PDF 문서 다운로드** (RAG 기능용):
+```bash
+# Instana 공식 문서 다운로드
+curl -o data/instana-observability-1.0.303-documentation.pdf \
+  "https://www.ibm.com/docs/en/SSE1JP5_1.0.303/pdf/instana-observability-1.0.303-documentation.pdf"
+```
+
+3. **Milvus 서버 시작** (RAG 기능용):
 ```bash
 # Docker Compose 사용
 docker-compose -f milvus-standalone-docker-compose.yml up -d
@@ -65,13 +72,14 @@ docker-compose -f milvus-standalone-docker-compose.yml up -d
 # 서버 상태 확인
 docker-compose -f milvus-standalone-docker-compose.yml ps
 ```
-RAG 최초 임베딩 시, PDF 문서 저장 스크립트 실행을 통해 Vector DB에 데이터를 임베딩해야합니다.
+
+4. **PDF 문서 벡터화** (RAG 기능용):
 ```bash
 # PDF 문서 저장 스크립트 실행
 uv run utils/ingest_pdf_to_milvus.py
 ```
 
-3. **애플리케이션 실행**:
+5. **애플리케이션 실행**:
 ```bash
 uv run streamlit run app.py
 ```
@@ -142,7 +150,20 @@ docker-compose -f milvus-standalone-docker-compose.yml up -d
 docker-compose -f milvus-standalone-docker-compose.yml ps
 ```
 
-#### 2. PDF 문서 저장 스크립트 실행
+#### 2. PDF 문서 다운로드 및 저장
+RAG 기능을 위해 Instana 문서를 다운로드하여 `data/` 디렉토리에 저장해야 합니다:
+
+```bash
+# PDF 문서 다운로드 (IBM 공식 문서)
+curl -o data/instana-observability-1.0.303-documentation.pdf \
+  "https://www.ibm.com/docs/en/SSE1JP5_1.0.303/pdf/instana-observability-1.0.303-documentation.pdf"
+```
+
+또는 브라우저에서 직접 다운로드:
+- [Instana Observability 1.0.303 Documentation PDF](https://www.ibm.com/docs/en/SSE1JP5_1.0.303/pdf/instana-observability-1.0.303-documentation.pdf)
+- 다운로드한 파일을 `data/` 디렉토리에 저장
+
+#### 3. PDF 문서 저장 스크립트 실행
 ```bash
 # 메인 스크립트 실행
 uv run ingest_pdf_to_milvus.py
