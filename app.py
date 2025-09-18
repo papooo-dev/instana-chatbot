@@ -1,5 +1,5 @@
 """
-IBM Instana Chatbot - Streamlit 애플리케이션
+AskStan - Streamlit 애플리케이션
 """
 import os
 import io
@@ -16,10 +16,25 @@ from core.llm import build_streaming_chain, get_rag_context
 load_dotenv()
 
 st.set_page_config(
-    page_title="IBM Instana Chatbot", 
+    page_title="AskStan", 
     page_icon="data/instana-logo.png", 
     layout="centered"
 )
+
+st.markdown("""
+<style>
+.stButton>button {
+    background-color: #006699; /* 녹색 */
+    color: white;
+    border: 2px solid #006699;
+}
+.stButton>button:hover {
+    background-color: #006699;
+    color: white;
+    border: 2px solid #006699;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # 세션 상태 초기화
 if "history" not in st.session_state:
@@ -104,7 +119,7 @@ col1, col2 = st.columns([1, 7])
 with col1:
     st.image("data/instana-logo.png", width=80)
 with col2:
-    st.title("IBM Instana Chatbot")
+    st.title("AskStan")
 
 st.caption("IBM의 Instana에 대해 궁금한 질문을 물어보세요!")
 
