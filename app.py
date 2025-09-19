@@ -9,7 +9,12 @@ from dotenv import load_dotenv
 
 import streamlit as st
 from core.llm import build_streaming_chain, get_rag_context
+from traceloop.sdk import Traceloop
 
+# =============================================================================
+# traceloop start
+# =============================================================================
+Traceloop.init()
 # =============================================================================
 # 설정 및 세션 상태 초기화
 # =============================================================================

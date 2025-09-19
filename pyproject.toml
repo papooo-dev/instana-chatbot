@@ -17,6 +17,7 @@ dependencies = [
     "langchain-milvus>=0.1.0", # for Milvus vector store integration
     "langchain-community>=0.3.0", # for PDF processing
     "pypdf>=4.0.0", # for PDF text extraction
+    "traceloop-sdk>=0.41.0"
 ]
 
 [project.scripts]
