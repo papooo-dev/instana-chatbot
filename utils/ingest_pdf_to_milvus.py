@@ -4,6 +4,7 @@ Instana PDF 문서를 Milvus 벡터 데이터베이스에 저장하는 메인 �
 import os
 import sys
 import time
+import glob
 from pathlib import Path
 from typing import List, Dict, Any
 
@@ -16,13 +17,50 @@ from core.embedding import WatsonxEmbeddingManager, validate_watsonx_config
 from core.milvus_manager import MilvusVectorStoreManager, validate_milvus_config
 
 
-def main():
+def find_latest_pdf(data_dir: str = "data") -> str:
+    """
+    data 디렉토리에서 최신 Instana PDF 문서를 찾습니다.
+    
+    Args:
+        data_dir: PDF 파일이 있는 디렉토리
+        
+    Returns:
+        최신 PDF 파일 경로
+    """
+    # Instana 문서 패턴으로 검색
+    pdf_pattern = os.path.join(data_dir, "instana-observability-*.pdf")
+    pdf_files = glob.glob(pdf_pattern)
+    
+    if not pdf_files:
+        raise FileNotFoundError(f"{data_dir} 디렉토리에서 Instana PDF 문서를 찾을 수 없습니다.")
+    
+    # 파일명으로 정렬하여 최신 버전 선택 (버전 번호가 파일명에 포함되어 있음)
+    latest_pdf = sorted(pdf_files)[-1]
+    return latest_pdf
+
+
+def main(pdf_path: str | None = None):
     print("=" * 60)
     print("Instana PDF 문서를 Milvus 벡터 DB에 저장하는 스크립트")
     print("=" * 60)
     
     # PDF 파일 경로 설정
-    pdf_path = "data/instana-observability-1.0.301-documentation.pdf"
+    if pdf_path is None:
+        # 명령줄 인자 확인
+        if len(sys.argv) > 1:
+            pdf_path = sys.argv[1]
+        else:
+            # 자동으로 최신 PDF 찾기
+            try:
+                pdf_path = find_latest_pdf()
+                print(f"\n📄 자동 감지된 PDF: {pdf_path}")
+            except FileNotFoundError as e:
+                print(f"\n❌ {e}")
+                print("\n사용법:")
+                print("  python utils/ingest_pdf_to_milvus.py [PDF_파일_경로]")
+                print("\n예시:")
+                print("  python utils/ingest_pdf_to_milvus.py data/instana-observability-1.0.312-documentation.pdf")
+                return False
     
     if not os.path.exists(pdf_path):
         print(f"❌ PDF 파일을 찾을 수 없습니다: {pdf_path}")
@@ -59,9 +97,9 @@ def main():
         
         # 3. Watsonx 임베딩 초기화
         print("\n3️⃣ Watsonx 임베딩 모델 초기화 중...")
-        # 명시적으로 임베딩 모델 설정
+        # 명시적으로 임베딩 모델 설정 (한국어 지원 다국어 모델)
         embedding_manager = WatsonxEmbeddingManager(
-            model_id="ibm/granite-embedding-107m-multilingual"
+            model_id="intfloat/multilingual-e5-large"
         )
         
         # 임베딩 테스트
@@ -70,18 +108,13 @@ def main():
         
         # 4. Milvus 벡터 스토어 초기화
         print("\n4️⃣ Milvus 벡터 스토어 초기화 중...")
+        print("   새로운 컬렉션을 생성합니다...")
         vectorstore_manager = MilvusVectorStoreManager(
             embeddings=embedding_manager.get_embeddings(),
             collection_name="instana_docs"
         )
         
-        # 연결 테스트
-        print("🔍 Milvus 연결 테스트 중...")
-        if not vectorstore_manager.test_connection():
-            print("❌ Milvus 연결에 실패했습니다.")
-            print("Docker Compose로 Milvus 서버가 실행 중인지 확인해주세요:")
-            print("  docker-compose -f milvus-standalone-docker-compose.yml up -d")
-            return False
+        print("✅ Milvus 벡터 스토어 준비 완료")
         
         # 5. 문서를 벡터 스토어에 저장
         print("\n5️⃣ 문서를 Milvus에 저장 중...")
@@ -162,10 +195,13 @@ def check_prerequisites():
     """사전 요구사항 확인"""
     print("🔍 사전 요구사항 확인 중...")
     
-    # PDF 파일 확인
-    pdf_path = "data/instana-observability-1.0.301-documentation.pdf"
-    if not os.path.exists(pdf_path):
-        print(f"❌ PDF 파일이 없습니다: {pdf_path}")
+    # PDF 파일 확인 (자동 감지)
+    try:
+        pdf_path = find_latest_pdf()
+        print(f"✅ PDF 파일 발견: {pdf_path}")
+    except FileNotFoundError as e:
+        print(f"❌ {e}")
+        print("data/ 디렉토리에 Instana PDF 문서를 다운로드해주세요.")
         return False
     
     # 환경 변수 확인

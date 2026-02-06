@@ -38,7 +38,7 @@ class InstanaRAGSystem:
         
         # 임베딩 매니저 초기화
         self.embedding_manager = WatsonxEmbeddingManager(
-            model_id="ibm/granite-embedding-107m-multilingual"
+            model_id="intfloat/multilingual-e5-large"
         )
         
         # 벡터 스토어 매니저 초기화

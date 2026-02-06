@@ -30,7 +30,7 @@ class WatsonxEmbeddingManager:
             url: Watson Machine Learning 인스턴스 URL
             params: 모델 파라미터
         """
-        self.model_id = model_id or os.getenv("WATSONX_MODEL_ID", "ibm/granite-embedding-107m-multilingual")
+        self.model_id = model_id or os.getenv("WATSONX_EMBEDDING_MODEL_ID", "intfloat/multilingual-e5-large")
         self.project_id = project_id or os.getenv("WATSONX_PROJECT_ID")
         self.url = url or os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
         

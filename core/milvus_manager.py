@@ -46,7 +46,7 @@ class MilvusVectorStoreManager:
                 embedding_function=self.embeddings,
                 connection_args={"host": "localhost", "port": "19530"},
                 collection_name=self.collection_name,
-                drop_old=False,  # 기존 컬렉션 유지
+                drop_old=True,  # 기존 컬렉션 삭제하고 새로 생성
             )
             
             print(f"Milvus 벡터 스토어 초기화 완료:")
