@@ -3,9 +3,10 @@ Milvus 벡터 데이터베이스 관리 모듈
 LangChain과 Milvus를 연동하여 벡터 스토어를 관리합니다.
 """
 import os
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, cast
 from dotenv import load_dotenv
 
+from traceloop.sdk.decorators import task
 from langchain_milvus import Milvus
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
@@ -33,7 +34,7 @@ class MilvusVectorStoreManager:
         self.collection_name = collection_name or os.getenv("MILVUS_COLLECTION", "instana_docs")
         self.embeddings = embeddings
         
-        self.vectorstore = None
+        self.vectorstore: Optional[Milvus] = None
         self._initialize_vectorstore()
     
     def _initialize_vectorstore(self):
@@ -44,9 +45,9 @@ class MilvusVectorStoreManager:
             
             self.vectorstore = Milvus(
                 embedding_function=self.embeddings,
-                connection_args={"host": "localhost", "port": "19530"},
+                connection_args={"host": "localhost", "port": 19530},
                 collection_name=self.collection_name,
-                drop_old=True,  # 기존 컬렉션 삭제하고 새로 생성
+                drop_old=False,  # 기존 컬렉션 유지
             )
             
             print(f"Milvus 벡터 스토어 초기화 완료:")
@@ -56,6 +57,7 @@ class MilvusVectorStoreManager:
         except Exception as e:
             raise Exception(f"Milvus 벡터 스토어 초기화 실패: {e}")
     
+    @task(name="milvus_insert_documents")  # pyright: ignore[reportArgumentType]
     def add_documents(self, documents: List[Document]) -> List[str]:
         """
         문서들을 벡터 스토어에 추가
@@ -70,7 +72,7 @@ class MilvusVectorStoreManager:
             print(f"{len(documents)}개 문서를 Milvus에 추가 중...")
             
             # 문서들을 벡터 스토어에 추가
-            ids = self.vectorstore.add_documents(documents)
+            ids = cast(Milvus, self.vectorstore).add_documents(documents)
             
             print(f"문서 추가 완료: {len(ids)}개 문서 저장됨")
             return ids
@@ -78,6 +80,7 @@ class MilvusVectorStoreManager:
         except Exception as e:
             raise Exception(f"문서 추가 실패: {e}")
     
+    @task(name="milvus_insert_texts")  # pyright: ignore[reportArgumentType]
     def add_texts(self, texts: List[str], metadatas: Optional[List[Dict[str, Any]]] = None) -> List[str]:
         """
         텍스트들을 벡터 스토어에 추가
@@ -92,7 +95,7 @@ class MilvusVectorStoreManager:
         try:
             print(f"{len(texts)}개 텍스트를 Milvus에 추가 중...")
             
-            ids = self.vectorstore.add_texts(texts, metadatas=metadatas)
+            ids = cast(Milvus, self.vectorstore).add_texts(texts, metadatas=metadatas)
             
             print(f"텍스트 추가 완료: {len(ids)}개 텍스트 저장됨")
             return ids
@@ -100,6 +103,7 @@ class MilvusVectorStoreManager:
         except Exception as e:
             raise Exception(f"텍스트 추가 실패: {e}")
     
+    @task(name="milvus_vector_search")  # pyright: ignore[reportArgumentType]
     def similarity_search(self, query: str, k: int = 5) -> List[Document]:
         """
         유사도 검색 수행
@@ -112,13 +116,14 @@ class MilvusVectorStoreManager:
             유사한 Document 객체 리스트
         """
         try:
-            results = self.vectorstore.similarity_search(query, k=k)
+            results = cast(Milvus, self.vectorstore).similarity_search(query, k=k)
             print(f"유사도 검색 완료: {len(results)}개 결과 반환")
             return results
             
         except Exception as e:
             raise Exception(f"유사도 검색 실패: {e}")
     
+    @task(name="milvus_vector_search_with_score")  # pyright: ignore[reportArgumentType]
     def similarity_search_with_score(self, query: str, k: int = 5) -> List[tuple]:
         """
         점수와 함께 유사도 검색 수행
@@ -131,7 +136,7 @@ class MilvusVectorStoreManager:
             (Document, score) 튜플 리스트
         """
         try:
-            results = self.vectorstore.similarity_search_with_score(query, k=k)
+            results = cast(Milvus, self.vectorstore).similarity_search_with_score(query, k=k)
             print(f"유사도 검색 완료: {len(results)}개 결과 반환")
             return results
             
@@ -149,13 +154,14 @@ class MilvusVectorStoreManager:
             검색기 인스턴스
         """
         try:
-            retriever = self.vectorstore.as_retriever(search_kwargs=search_kwargs)
+            retriever = cast(Milvus, self.vectorstore).as_retriever(search_kwargs=search_kwargs)
             print("검색기 생성 완료")
             return retriever
             
         except Exception as e:
             raise Exception(f"검색기 생성 실패: {e}")
     
+    @task(name="milvus_query_collection_info")  # pyright: ignore[reportArgumentType]
     def get_collection_info(self) -> Dict[str, Any]:
         """
         컬렉션 정보 반환
@@ -165,7 +171,7 @@ class MilvusVectorStoreManager:
         """
         try:
             # Milvus 컬렉션 정보 조회
-            collection = self.vectorstore._get_collection()
+            collection = cast(Any, cast(Milvus, self.vectorstore))._get_collection()
             stats = collection.get_stats()
             
             info = {
@@ -182,15 +188,17 @@ class MilvusVectorStoreManager:
             print(f"컬렉션 정보 조회 실패: {e}")
             return {"collection_name": self.collection_name, "error": str(e)}
     
+    @task(name="milvus_delete_collection")  # pyright: ignore[reportArgumentType]
     def delete_collection(self):
         """컬렉션 삭제"""
         try:
-            self.vectorstore._drop_collection()
+            cast(Any, cast(Milvus, self.vectorstore))._drop_collection()
             print(f"컬렉션 '{self.collection_name}' 삭제 완료")
             
         except Exception as e:
             raise Exception(f"컬렉션 삭제 실패: {e}")
     
+    @task(name="milvus_test_connection")  # pyright: ignore[reportArgumentType]
     def test_connection(self) -> bool:
         """
         Milvus 연결 테스트
@@ -200,7 +208,7 @@ class MilvusVectorStoreManager:
         """
         try:
             # 간단한 검색으로 연결 테스트
-            self.vectorstore.similarity_search("test", k=1)
+            cast(Milvus, self.vectorstore).similarity_search("test", k=1)
             print("Milvus 연결 테스트 성공")
             return True
             

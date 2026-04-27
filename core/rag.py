@@ -6,6 +6,7 @@ import os
 from typing import List, Dict, Any, Optional, Tuple
 from dotenv import load_dotenv
 
+from traceloop.sdk.decorators import task
 from langchain_core.documents import Document
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.callbacks import CallbackManagerForRetrieverRun
@@ -52,6 +53,7 @@ class InstanaRAGSystem:
         print(f"  - 검색 문서 수: {top_k}")
         print(f"  - 유사도 임계값: {similarity_threshold}")
     
+    @task(name="milvus_rag_search_documents")  # pyright: ignore[reportArgumentType]
     def search_documents(self, query: str) -> List[Document]:
         """
         쿼리에 대한 관련 문서 검색
@@ -73,6 +75,7 @@ class InstanaRAGSystem:
             print(f"문서 검색 실패: {e}")
             return []
     
+    @task(name="milvus_rag_search_with_scores")  # pyright: ignore[reportArgumentType]
     def search_with_scores(self, query: str) -> List[Tuple[Document, float]]:
         """
         점수와 함께 문서 검색

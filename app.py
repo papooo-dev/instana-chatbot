@@ -17,9 +17,14 @@ from traceloop.sdk import Traceloop
 load_dotenv()
 
 # =============================================================================
-# traceloop start
+# Instana Generative AI Observability 설정
 # =============================================================================
-Traceloop.init(app_name="AskStan",disable_batch=True)
+# OTEL_RESOURCE_ATTRIBUTES 환경 변수가 설정되지 않은 경우 기본값 설정
+if "OTEL_RESOURCE_ATTRIBUTES" not in os.environ:
+    os.environ["OTEL_RESOURCE_ATTRIBUTES"] = "INSTANA_PLUGIN=genai"
+
+# Traceloop SDK 초기화 (Instana 모니터링)
+Traceloop.init(app_name="AskStan", disable_batch=True)
 
 st.set_page_config(
     page_title="AskStan", 
