@@ -111,7 +111,8 @@ def main(pdf_path: str | None = None):
         print("   새로운 컬렉션을 생성합니다...")
         vectorstore_manager = MilvusVectorStoreManager(
             embeddings=embedding_manager.get_embeddings(),
-            collection_name="instana_docs"
+            collection_name="instana_docs",
+            dimension=1024  # multilingual-e5-large 모델의 벡터 차원
         )
         
         print("✅ Milvus 벡터 스토어 준비 완료")

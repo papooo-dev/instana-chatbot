@@ -45,7 +45,8 @@ class InstanaRAGSystem:
         # 벡터 스토어 매니저 초기화
         self.vectorstore_manager = MilvusVectorStoreManager(
             embeddings=self.embedding_manager.get_embeddings(),
-            collection_name=collection_name
+            collection_name=collection_name,
+            dimension=1024  # multilingual-e5-large 모델의 벡터 차원
         )
         
         print(f"RAG 시스템 초기화 완료:")
