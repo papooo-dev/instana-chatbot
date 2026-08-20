@@ -1,0 +1,22 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# --- uv 설치 ---
+# 방법 A (인터넷 가능): ghcr.io에서 복사 (빠름)
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+# 방법 B (인터넷 차단 환경): 위 줄 주석 처리 후 아래 줄 활성화
+# RUN pip install uv --no-cache-dir
+
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
+
+COPY utils/ ./utils/
+COPY core/ ./core/
+COPY data/ ./data/
+
+RUN chmod -R g+rwX /app
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+CMD ["uv", "run", "utils/ingest_pdf_to_milvus.py"]

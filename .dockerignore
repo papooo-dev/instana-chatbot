@@ -1,0 +1,12 @@
+.env
+.git/
+.gitignore
+.DS_Store
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+volumes/
+ocp/
+config/volumes/
+*.md

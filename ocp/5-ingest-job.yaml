@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: milvus-ingest
+  namespace: askstan
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: wait-milvus
+          image: busybox:1.36
+          command: ['sh', '-c', 'until nc -z milvus-standalone 19530; do echo waiting for milvus; sleep 5; done']
+      containers:
+        - name: ingest
+          image: image-registry.openshift-image-registry.svc:5000/askstan/askstan-ingest:latest
+          envFrom:
+            - secretRef:
+                name: askstan-secret
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "500m"
+            limits:
+              memory: "2Gi"
+              cpu: "1000m"

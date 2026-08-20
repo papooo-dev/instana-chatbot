@@ -1,0 +1,73 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: askstan
+  namespace: askstan
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: askstan
+  template:
+    metadata:
+      labels:
+        app: askstan
+    spec:
+      containers:
+        - name: askstan
+          image: image-registry.openshift-image-registry.svc:5000/askstan/askstan:latest
+          ports:
+            - containerPort: 8501
+          envFrom:
+            - secretRef:
+                name: askstan-secret
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: askstan
+  namespace: askstan
+spec:
+  selector:
+    app: askstan
+  ports:
+    - port: 8501
+      targetPort: 8501
+---
+# OpenShift Route (HTTPS 자동 처리)
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: askstan
+  namespace: askstan
+spec:
+  to:
+    kind: Service
+    name: askstan
+  port:
+    targetPort: 8501
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

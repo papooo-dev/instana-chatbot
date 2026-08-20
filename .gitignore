@@ -1,6 +1,4 @@
 .env
-uv.lock
-app.py
 .DS_Store
 __pycache__/
 
@@ -9,3 +7,6 @@ volumes/
 
 # Large documentation files
 *.pdf
+
+# OCP secret (실제 값 채운 경우 커밋 방지)
+ocp/1-secret.yaml

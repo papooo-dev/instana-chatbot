@@ -1,0 +1,39 @@
+---
+# etcd PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: milvus-etcd-pvc
+  namespace: askstan
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+# MinIO PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: milvus-minio-pvc
+  namespace: askstan
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+# Milvus standalone PVC
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: milvus-standalone-pvc
+  namespace: askstan
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
