@@ -37,6 +37,13 @@ spec:
           volumeMounts:
             - name: etcd-data
               mountPath: /etcd
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           readinessProbe:
             exec:
               command: ["etcdctl", "endpoint", "health"]
@@ -96,6 +103,13 @@ spec:
           volumeMounts:
             - name: minio-data
               mountPath: /minio_data
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           readinessProbe:
             httpGet:
               path: /minio/health/live
@@ -164,6 +178,13 @@ spec:
           volumeMounts:
             - name: milvus-data
               mountPath: /var/lib/milvus
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
           readinessProbe:
             httpGet:
               path: /healthz
